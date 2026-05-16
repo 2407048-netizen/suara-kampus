@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark text-center">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Registrasi Akun Mahasiswa</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>SSO ITG:</strong> Email akan otomatis dibuat berdasarkan NIM Anda.
+                </div>
+                
+                <form method="POST" id="registerForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">NIM</label>
+                        <input type="text" id="nimInput" name="nim" class="form-control" 
+                               placeholder="Contoh: 202401001" required oninput="validateEmail()">
+                        <div class="form-text">Masukkan NIM aktif Anda</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Lengkap</label>
+                        <input type="text" name="nama" class="form-control" 
+                               placeholder="Sesuai Kartu Tanda Mahasiswa" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email Kampus (Otomatis)</label>
+                        <input type="email" id="emailInput" name="email" class="form-control bg-light" 
+                               placeholder="nim@itg.ac.id" readonly required>
+                        <div class="form-text">Email ITG akan otomatis terdaftar</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" class="form-control" 
+                               placeholder="Minimal 6 karakter" minlength="6" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning text-white fw-bold w-100">
+                        <i class="fas fa-user-plus me-2"></i>Daftar Akun
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <small>Sudah punya akun? <a href="{{ url_for('login') }}">Login disini</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateEmail() {
+        const nimInput = document.getElementById('nimInput');
+        const emailInput = document.getElementById('emailInput');
+        const nim = nimInput.value.trim();
+        
+        // Auto-generate email ITG dari NIM
+        if (nim.length > 0) {
+            emailInput.value = nim + '@itg.ac.id';
+            emailInput.readOnly = true;
+        } else {
+            emailInput.value = '';
+            emailInput.readOnly = false;
+        }
+    }
+</script>
+{% endblock %}

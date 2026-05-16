@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm p-4">
+            <h3 class="mb-4 text-primary"><i class="fas fa-book-open me-2"></i>FAQ & Panduan Layanan</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">Bagaimana cara melapor?</button></h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Klik menu <strong>Keluhan</strong> atau tombol <strong>Lapor Cepat</strong>, pilih kategori, isi detail, dan kirim. Sistem akan otomatis membuat PDF bukti laporan.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">Apakah identitas saya aman?</button></h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Ya. Sistem menggunakan <strong>Privacy-by-Default</strong>. Nama dan NIM tidak akan ditampilkan di daftar publik. Hanya admin berwenang yang dapat melihat data pelapor.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Berapa lama laporan diproses?</button></h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Standar SLA kampus adalah <strong>3x24 jam</strong> untuk status Diproses, dan <strong>7 hari kerja</strong> untuk status Selesai. Anda akan mendapat notifikasi email setiap ada perubahan.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">Bagaimana cara mendukung aspirasi?</button></h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Buka menu <strong>Aspirasi</strong>, pilih usulan yang Anda dukung, lalu klik tombol <strong>"Dukung"</strong>. Aspirasi dengan dukungan terbanyak akan diprioritaskan oleh admin.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

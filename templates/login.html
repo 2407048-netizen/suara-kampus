@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Login Sistem</h4>
+            </div>
+            <div class="card-body">
+                <!-- TOMBOL PILIH ROLE -->
+                <div class="btn-group w-100 mb-4" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="btnMahasiswa" onclick="switchRole('mahasiswa')">
+                        <i class="fas fa-user-graduate me-2"></i>Mahasiswa
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="btnAdmin" onclick="switchRole('admin')">
+                        <i class="fas fa-user-shield me-2"></i>Admin
+                    </button>
+                </div>
+
+                <form method="POST" id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">NIM / NIP</label>
+                        <input type="text" name="nim" id="nimInput" class="form-control" 
+                               placeholder="Masukkan NIM Mahasiswa" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+                    </div>
+                    
+                    <!-- Info Login Admin (Muncul hanya saat pilih Admin) -->
+                    <div id="adminInfo" class="alert alert-danger d-none">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Login Admin:</strong> Gunakan NIM <code>ADMIN001</code> dan password yang telah ditetapkan.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <small>Belum punya akun? <a href="{{ url_for('register') }}">Daftar disini</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchRole(role) {
+        const btnMhs = document.getElementById('btnMahasiswa');
+        const btnAdmin = document.getElementById('btnAdmin');
+        const nimInput = document.getElementById('nimInput');
+        const adminInfo = document.getElementById('adminInfo');
+
+        if (role === 'mahasiswa') {
+            btnMhs.classList.add('active');
+            btnAdmin.classList.remove('active');
+            nimInput.placeholder = 'Masukkan NIM Mahasiswa';
+            nimInput.value = '';
+            adminInfo.classList.add('d-none');
+        } else {
+            btnMhs.classList.remove('active');
+            btnAdmin.classList.add('active');
+            nimInput.placeholder = 'ADMIN001';
+            nimInput.value = 'ADMIN001';
+            adminInfo.classList.remove('d-none');
+        }
+    }
+</script>
+{% endblock %}

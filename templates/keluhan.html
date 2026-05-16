@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="h4 text-primary"><i class="fas fa-folder-open me-2"></i>Daftar Keluhan</h2>
+                    <p class="text-muted mb-0">Pantau status keluhan fasilitas kampus Anda</p>
+                </div>
+                {% if session.role == 'mahasiswa' %}
+                    <a href="{{ url_for('buat_pengaduan') }}" class="btn btn-itg">
+                        <i class="fas fa-plus me-1"></i> Buat Laporan Baru
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Info:</strong> PDF laporan hanya dapat diunduh setelah status laporan menjadi <strong>"Selesai"</strong>. 
+                Notifikasi email akan dikirim otomatis ketika laporan selesai ditangani.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Judul</th>
+                            <th>Kategori</th>
+                            <th>Prioritas</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tickets %}
+                        <tr>
+                            <td>#{{ t.id }}</td>
+                            <td>
+                                <strong>{{ t.judul }}</strong><br>
+                                <small class="text-muted">Pelapor: Mahasiswa Anonim</small>
+                            </td>
+                            <td>{{ t.kategori }}</td>
+                            <td>
+                                {% if t.prioritas == 'Urgent' %}
+                                    <span class="badge bg-danger">Urgent</span>
+                                {% elif t.prioritas == 'Tinggi' %}
+                                    <span class="badge bg-warning text-dark">Tinggi</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark">{{ t.prioritas }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if t.status == 'Menunggu Persetujuan' %}
+                                    <span class="badge bg-secondary">Menunggu Persetujuan</span>
+                                {% elif t.status == 'Open' %}
+                                    <span class="badge bg-warning text-dark">Open</span>
+                                {% elif t.status == 'Diproses' %}
+                                    <span class="badge bg-primary">Diproses</span>
+                                {% elif t.status == 'Selesai' %}
+                                    <span class="badge bg-success">Selesai</span>
+                                {% else %}
+                                    <span class="badge bg-dark">Ditutup</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ t.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <!-- Tombol Download PDF (hanya jika status Selesai) -->
+                                {% if t.status == 'Selesai' or session.role in ['admin', 'staff'] %}
+                                <a href="{{ url_for('download_pdf', ticket_id=t.id) }}" class="btn btn-sm btn-danger mb-1" title="Download Laporan PDF">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                                {% else %}
+                                <span class="badge bg-light text-dark"><i class="fas fa-lock me-1"></i>Belum Tersedia</span>
+                                {% endif %}
+                                
+                                <!-- Tombol Update Status (Hanya Admin/Staff) -->
+                                {% if session.role in ['admin', 'staff'] %}
+                                <form method="POST" action="{{ url_for('update_status', ticket_id=t.id) }}" class="d-flex gap-2 mt-1">
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" title="Ubah Status">
+                                        <option {% if t.status=='Menunggu Persetujuan' %}selected{% endif %}>Menunggu Persetujuan</option>
+                                        <option {% if t.status=='Open' %}selected{% endif %}>Open</option>
+                                        <option {% if t.status=='Diproses' %}selected{% endif %}>Diproses</option>
+                                        <option {% if t.status=='Selesai' %}selected{% endif %}>Selesai</option>
+                                        <option {% if t.status=='Ditutup' %}selected{% endif %}>Ditutup</option>
+                                    </select>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not tickets %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-2"></i>
+                        <p>Belum ada keluhan yang dilaporkan.</p>
+                        {% if session.role == 'mahasiswa' %}
+                            <a href="{{ url_for('buat_pengaduan') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Buat Laporan Pertama
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

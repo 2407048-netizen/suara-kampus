@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Kotak Aspirasi Mahasiswa</h4>
+                <a href="{{ url_for('riwayat_aspirasi') }}" class="btn btn-sm btn-outline-dark">
+                    <i class="fas fa-history me-1"></i>Lihat Riwayat
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Sampaikan saran, kritik, atau ide cemerlangmu untuk kemajuan Institut Teknologi Garut. 
+                    Suara kamu sangat berarti!
+                </p>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Judul Aspirasi</label>
+                        <input type="text" name="judul" class="form-control" placeholder="Contoh: Perbanyak Kegiatan Kampus" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Isi Aspirasi / Saran</label>
+                        <textarea name="isi" class="form-control" rows="6" placeholder="Tuliskan detail saranmu di sini..." required></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Batal</a>
+                        <button type="submit" class="btn btn-warning text-white fw-bold px-4">
+                            <i class="fas fa-paper-plane me-2"></i>Kirim Aspirasi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
