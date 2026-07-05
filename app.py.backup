@@ -1,4 +1,4 @@
-﻿import os
+import os
 import io
 import csv
 import pdfkit
@@ -313,7 +313,7 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
-        print("âœ… Admin default dibuat: admin@itg.ac.id / admin123")
+        print("✅ Admin default dibuat: admin@itg.ac.id / admin123")
 
 # ================= FUNGSI HELPER =================
 
@@ -599,7 +599,7 @@ def register():
         role = 'mahasiswa'
         fakultas = 'Umum'
 
-        # âœ… VALIDASI EMAIL @itg.ac.id (FR-01)
+        # ✅ VALIDASI EMAIL @itg.ac.id (FR-01)
         if not validate_email_itg(email):
             flash('Email harus menggunakan domain @itg.ac.id!', 'danger')
             return redirect(url_for('register'))
@@ -701,7 +701,7 @@ def buat_pengaduan():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # âœ… ANTI-SPAM: Maksimal 2 laporan per hari
+    # ✅ ANTI-SPAM: Maksimal 2 laporan per hari
     today = datetime.utcnow().date()
     today_count = Ticket.query.filter(
         Ticket.user_id == session['user_id'],
@@ -822,7 +822,7 @@ def buat_aspirasi():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # âœ… ANTI-SPAM: Maksimal 2 aspirasi per hari
+    # ✅ ANTI-SPAM: Maksimal 2 aspirasi per hari
     today = datetime.utcnow().date()
     today_count = Aspirasi.query.filter(
         Aspirasi.user_id == session['user_id'],
@@ -970,7 +970,7 @@ def laporan_dosen():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # âœ… ANTI-SPAM: Maksimal 1 laporan setiap 2 hari
+    # ✅ ANTI-SPAM: Maksimal 1 laporan setiap 2 hari
     two_days_ago = datetime.utcnow() - timedelta(days=2)
     recent_count = LecturerReport.query.filter(
         LecturerReport.user_id == session['user_id'],
@@ -1076,7 +1076,7 @@ def admin_update_laporan_dosen(id):
     log_activity(
         session['user_id'], 
         f'update_laporan_dosen_{id}',
-        f'Status: {status_lama} â†’ {status_baru}'
+        f'Status: {status_lama} → {status_baru}'
     )
     
     # Notifikasi ke pelapor
@@ -1196,10 +1196,16 @@ def support_aspirasi(ticket_id):
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("ðŸš€ SUARA KAMPUS ITG - Server dimulai...")
+    print("🚀 SUARA KAMPUS ITG - Server dimulai...")
     print("="*60)
-    print("ðŸ“ Akses di: http://127.0.0.1:5000")
-    print("ðŸ‘¤ Login Admin: NIM=ADMIN001 | Pass=admin123")
+    print("📝 Akses di: http://127.0.0.1:5000")
+    print("👤 Login Admin: NIM=ADMIN001 | Pass=admin123")
     print("="*60 + "\n")
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)      {
+      "name": "insert_edit_into_file",
+      "arguments": {
+        "file": "templates/base.html",
+        "line": "266"
+      }
+    }
              

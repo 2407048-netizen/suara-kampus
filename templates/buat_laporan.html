@@ -38,8 +38,8 @@
             </div>
             
             <div class="card-body p-4">
-                <form action="{{ url_for('buat_laporan') }}" method="POST" enctype="multipart/form-data" id="laporanForm">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <form action="{{ url_for('buat_pengaduan') }}" method="POST" enctype="multipart/form-data" id="laporanForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
                     
                     <div class="mb-3">
                         <label for="judul" class="form-label fw-semibold">Judul Laporan <span class="text-danger">*</span></label>

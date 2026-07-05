@@ -10,7 +10,7 @@
                     <p class="text-muted mb-0">Pantau status keluhan fasilitas kampus Anda</p>
                 </div>
                 {% if session.role == 'mahasiswa' %}
-                    <a href="{{ url_for('buat_laporan') }}" class="btn btn-itg">
+                    <a href="{{ url_for('buat_pengaduan') }}" class="btn btn-itg">
                         <i class="fas fa-plus me-1"></i> Buat Laporan Baru
                     </a>
                 {% endif %}
@@ -80,7 +80,7 @@
                                 <!-- Tombol Update Status (Hanya Admin/Staff) -->
                                 {% if session.role in ['admin', 'staff'] %}
                                 <form method="POST" action="{{ url_for('update_status', ticket_id=t.id) }}" class="d-flex gap-2 mt-1">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
                                     <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" title="Ubah Status">
                                         <option {% if t.status=='Menunggu Persetujuan' %}selected{% endif %}>Menunggu Persetujuan</option>
                                         <option {% if t.status=='Open' %}selected{% endif %}>Open</option>
@@ -100,7 +100,7 @@
                         <i class="fas fa-inbox fa-3x mb-2"></i>
                         <p>Belum ada keluhan yang dilaporkan.</p>
                         {% if session.role == 'mahasiswa' %}
-                            <a href="{{ url_for('buat_laporan') }}" class="btn btn-primary">
+                            <a href="{{ url_for('buat_pengaduan') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-1"></i> Buat Laporan Pertama
                             </a>
                         {% endif %}

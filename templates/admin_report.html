@@ -38,7 +38,7 @@
             <div class="card p-4">
                 <h5 class="fw-bold mb-3">Perbarui Status</h5>
                 <form method="post" action="{{ url_for('update_status', ticket_id=ticket.id) }}" enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
                     <div class="mb-3">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">

@@ -19,7 +19,7 @@
                 </div>
 
                 <form method="POST" id="loginForm">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
                     <div class="mb-3">
                         <label class="form-label fw-bold">NIM / NIP</label>
                         <input type="text" name="nim" id="nimInput" class="form-control" 
