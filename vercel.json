@@ -1,4 +1,5 @@
-﻿{
+﻿@"
+{
   "version": 2,
   "builds": [
     {
@@ -11,8 +12,8 @@
       "src": "/(.*)",
       "dest": "app.py"
     }
-  ],
-  "env": {
-    "FLASK_ENV": "production"
-  }
+  ]
 }
+"@ | Set-Content vercel.json -Encoding UTF8
+
+Write-Host "✅ vercel.json sudah diperbaiki" -ForegroundColor Green
