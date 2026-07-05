@@ -1,4 +1,4 @@
-import os
+﻿import os
 import io
 import csv
 import pdfkit
@@ -19,13 +19,13 @@ from flask_mail import Mail, Message
 from functools import wraps
 
 # ================= KONFIGURASI APLIKASI =================
-app = Flask(__name__)
+app = Flask(__name__, instance_path='/tmp/instance', instance_relative_config=False)
 app.config['SECRET_KEY'] = 'suara_kampus_itgarut_2026'
 app.config['WTF_CSRF_ENABLED'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suara_kampus.db'
 socketio = SocketIO(app, cors_allowed_origins="*")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB
 csrf = CSRFProtect(app)
 limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
@@ -50,8 +50,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'Suara Kamp
 mail = Mail(app)
 
 # Inisialisasi Database
-try:
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Upload folder di /tmp (Vercel writable)
 except OSError:
     pass
 db = SQLAlchemy(app)
@@ -316,7 +315,7 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
-        print("✅ Admin default dibuat: admin@itg.ac.id / admin123")
+        print("âœ… Admin default dibuat: admin@itg.ac.id / admin123")
 
 # ================= FUNGSI HELPER =================
 
@@ -602,7 +601,7 @@ def register():
         role = 'mahasiswa'
         fakultas = 'Umum'
 
-        # ✅ VALIDASI EMAIL @itg.ac.id (FR-01)
+        # âœ… VALIDASI EMAIL @itg.ac.id (FR-01)
         if not validate_email_itg(email):
             flash('Email harus menggunakan domain @itg.ac.id!', 'danger')
             return redirect(url_for('register'))
@@ -704,7 +703,7 @@ def buat_pengaduan():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # ✅ ANTI-SPAM: Maksimal 2 laporan per hari
+    # âœ… ANTI-SPAM: Maksimal 2 laporan per hari
     today = datetime.utcnow().date()
     today_count = Ticket.query.filter(
         Ticket.user_id == session['user_id'],
@@ -825,7 +824,7 @@ def buat_aspirasi():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # ✅ ANTI-SPAM: Maksimal 2 aspirasi per hari
+    # âœ… ANTI-SPAM: Maksimal 2 aspirasi per hari
     today = datetime.utcnow().date()
     today_count = Aspirasi.query.filter(
         Aspirasi.user_id == session['user_id'],
@@ -973,7 +972,7 @@ def laporan_dosen():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # ✅ ANTI-SPAM: Maksimal 1 laporan setiap 2 hari
+    # âœ… ANTI-SPAM: Maksimal 1 laporan setiap 2 hari
     two_days_ago = datetime.utcnow() - timedelta(days=2)
     recent_count = LecturerReport.query.filter(
         LecturerReport.user_id == session['user_id'],
@@ -1079,7 +1078,7 @@ def admin_update_laporan_dosen(id):
     log_activity(
         session['user_id'], 
         f'update_laporan_dosen_{id}',
-        f'Status: {status_lama} → {status_baru}'
+        f'Status: {status_lama} â†’ {status_baru}'
     )
     
     # Notifikasi ke pelapor
@@ -1199,11 +1198,13 @@ def support_aspirasi(ticket_id):
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🚀 SUARA KAMPUS ITG - Server dimulai...")
+    print("ðŸš€ SUARA KAMPUS ITG - Server dimulai...")
     print("="*60)
-    print("📝 Akses di: http://127.0.0.1:5000")
-    print("👤 Login Admin: NIM=ADMIN001 | Pass=admin123")
+    print("ðŸ“ Akses di: http://127.0.0.1:5000")
+    print("ðŸ‘¤ Login Admin: NIM=ADMIN001 | Pass=admin123")
     print("="*60 + "\n")
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
              
+
+
 
