@@ -51,9 +51,6 @@ mail = Mail(app)
 
 # Inisialisasi Database
 try:
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-except OSError:
-    pass  # Di Vercel, folder tidak bisa dibuat
 db = SQLAlchemy(app)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
