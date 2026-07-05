@@ -6,7 +6,7 @@ with app.app_context():
     existing_admin = User.query.filter_by(nim='ADMIN001').first()
     
     if existing_admin:
-        print("⚠️ Akun admin sudah ada!")
+        print("Akun admin sudah ada!")
     else:
         # Buat akun admin baru
         admin = User(
@@ -21,7 +21,7 @@ with app.app_context():
         # Simpan ke database
         db.session.add(admin)
         db.session.commit()
-        print("✅ BERHASIL! Akun admin dibuat.")
+        print("BERHASIL! Akun admin dibuat.")
         print("--------------------------------")
         print("NIM      : ADMIN001")
         print("Password : admin123")

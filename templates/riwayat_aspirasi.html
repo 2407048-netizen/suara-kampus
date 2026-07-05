@@ -55,10 +55,17 @@
                                    onclick="return confirm('Apakah Anda ingin mendukung aspirasi ini?')">
                                     <i class="fas fa-plus me-1"></i>Dukung
                                 </a>
+
+                                {% if t.status == 'Selesai' %}
+                                <a href="{{ url_for('download_pdf', ticket_id=t.id) }}" class="btn btn-sm btn-danger mt-1" title="Download PDF Laporan">
+                                    <i class="fas fa-file-pdf me-1"></i>PDF
+                                </a>
+                                {% endif %}
                                 
                                 <!-- Admin bisa update status aspirasi -->
                                 {% if session.role in ['admin', 'staff'] %}
                                 <form method="POST" action="{{ url_for('update_status', ticket_id=t.id) }}" class="d-flex gap-2 mt-1">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" title="Ubah Status">
                                         <option {% if t.status=='Open' %}selected{% endif %}>Diterima</option>
                                         <option {% if t.status=='Diproses' %}selected{% endif %}>Dipertimbangkan</option>

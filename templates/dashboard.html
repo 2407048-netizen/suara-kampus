@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Suara Kampus ITG{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: #fff;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .bg-light-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+    .bg-light-warning { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
+    .bg-light-success { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
+    .bg-light-info { background-color: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
+    .bg-light-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+    
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+        list-style: none;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #0d6efd;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #0d6efd;
+    }
+</style>
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold" style="color: #003366;">Halo, {{ session.nama }}! 👋</h2>
+        <p class="text-muted">Selamat datang di Dashboard Suara Kampus ITG. Berikut ringkasan aktivitas Anda.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        {% if session.role == 'mahasiswa' %}
+            <a href="{{ url_for('buat_laporan') }}" class="btn btn-itg px-4 py-2 rounded-pill shadow-sm">
+                <i class="fas fa-plus me-2"></i>Buat Laporan
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- STATISTIK GRID -->
+<div class="row g-4 mb-5">
+    <!-- Total Laporan -->
+    <div class="col-md-4 col-sm-6">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-box bg-light-primary me-3">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Total Keluhan</h6>
+                    <h3 class="fw-bold mb-0">{{ total_laporan }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Laporan Diproses -->
+    <div class="col-md-4 col-sm-6">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-box bg-light-warning me-3">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Sedang Diproses</h6>
+                    <h3 class="fw-bold mb-0">{{ laporan_diproses }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Laporan Selesai -->
+    <div class="col-md-4 col-sm-6">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-box bg-light-success me-3">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Laporan Selesai</h6>
+                    <h3 class="fw-bold mb-0">{{ laporan_selesai }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- STATISTIK ASPIRASI -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+                <h5 class="fw-bold text-dark"><i class="fas fa-bullhorn text-warning me-2"></i>Sekilas Aspirasi Kampus</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row text-center mb-4">
+                    <div class="col-6 border-end">
+                        <h2 class="fw-bold text-primary mb-0">{{ total_aspirasi }}</h2>
+                        <span class="text-muted">Total Aspirasi</span>
+                    </div>
+                    <div class="col-6">
+                        <h2 class="fw-bold text-danger mb-0"><i class="fas fa-heart me-1"></i>{{ total_like }}</h2>
+                        <span class="text-muted">Total Dukungan</span>
+                    </div>
+                </div>
+                
+                {% if aspirasi_populer %}
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-warning">
+                    <span class="badge bg-warning text-dark mb-2">Aspirasi Terpopuler</span>
+                    <h6 class="fw-bold mb-1">{{ aspirasi_populer.judul }}</h6>
+                    <p class="text-muted small mb-2 text-truncate">{{ aspirasi_populer.deskripsi }}</p>
+                    <span class="badge bg-danger rounded-pill"><i class="fas fa-heart me-1"></i>{{ aspirasi_populer.support_count }} Dukungan</span>
+                </div>
+                {% else %}
+                <div class="text-center text-muted p-3">
+                    <p class="mb-0">Belum ada aspirasi yang tercatat.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI TERBARU -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+                <h5 class="fw-bold text-dark"><i class="fas fa-bell text-info me-2"></i>Notifikasi Terbaru</h5>
+            </div>
+            <div class="card-body p-4">
+                {% if notifikasi %}
+                <ul class="timeline m-0">
+                    {% for n in notifikasi %}
+                    <li class="timeline-item">
+                        <h6 class="fw-bold mb-1">{{ n.judul }}</h6>
+                        <p class="text-muted small mb-1">
+                            Status berubah menjadi: 
+                            <span class="badge {% if n.status == 'Selesai' %}bg-success{% elif n.status == 'Diproses' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                {{ n.status }}
+                            </span>
+                        </p>
+                        <small class="text-muted"><i class="far fa-clock me-1"></i>{{ n.updated_at.strftime('%d %b %Y, %H:%M') }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center text-muted mt-4">
+                    <i class="far fa-bell-slash fa-2x mb-2"></i>
+                    <p>Belum ada notifikasi.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABEL KELUHAN LAMA DIINTEGRASIKAN -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-primary mb-0"><i class="fas fa-list me-2"></i>Daftar Keluhan</h4>
+            </div>
+
+            <div class="alert alert-info border-0 rounded-3">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Info:</strong> PDF laporan hanya dapat diunduh setelah status laporan menjadi <strong>"Selesai"</strong>. 
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Judul</th>
+                            <th>Kategori</th>
+                            <th>Prioritas</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tickets %}
+                        <tr>
+                            <td><span class="fw-bold text-muted">#{{ t.id }}</span></td>
+                            <td>
+                                <strong>{{ t.judul }}</strong><br>
+                                <small class="text-muted">Pelapor: Mahasiswa Anonim</small>
+                            </td>
+                            <td>{{ t.kategori }}</td>
+                            <td>
+                                {% if t.prioritas == 'Urgent' %}
+                                    <span class="badge bg-danger">Urgent</span>
+                                {% elif t.prioritas == 'Tinggi' %}
+                                    <span class="badge bg-warning text-dark">Tinggi</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark">{{ t.prioritas }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if t.status == 'Diajukan' %}
+                                    <span class="badge bg-secondary">Diajukan</span>
+                                {% elif t.status == 'Menunggu Persetujuan' %}
+                                    <span class="badge bg-secondary">Menunggu Persetujuan</span>
+                                {% elif t.status == 'Open' %}
+                                    <span class="badge bg-warning text-dark">Open</span>
+                                {% elif t.status == 'Diproses' %}
+                                    <span class="badge bg-primary">Diproses</span>
+                                {% elif t.status == 'Selesai' %}
+                                    <span class="badge bg-success">Selesai</span>
+                                {% else %}
+                                    <span class="badge bg-dark">Ditutup</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ t.created_at.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <!-- Tombol Download PDF (hanya jika status Selesai) -->
+                                {% if t.status == 'Selesai' or session.role in ['admin', 'staff'] %}
+                                <a href="{{ url_for('download_pdf', ticket_id=t.id) }}" class="btn btn-sm btn-danger mb-1 shadow-sm" title="Download Laporan PDF">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                                {% else %}
+                                <span class="badge bg-light text-muted border"><i class="fas fa-lock me-1"></i>Terkunci</span>
+                                {% endif %}
+                                
+                                <!-- Tombol Update Status (Hanya Admin/Staff) -->
+                                {% if session.role in ['admin', 'staff'] %}
+                                <form method="POST" action="{{ url_for('update_status', ticket_id=t.id) }}" class="d-flex gap-2 mt-1">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" title="Ubah Status">
+                                        <option {% if t.status=='Diajukan' %}selected{% endif %}>Diajukan</option>
+                                        <option {% if t.status=='Menunggu Persetujuan' %}selected{% endif %}>Menunggu Persetujuan</option>
+                                        <option {% if t.status=='Open' %}selected{% endif %}>Open</option>
+                                        <option {% if t.status=='Diproses' %}selected{% endif %}>Diproses</option>
+                                        <option {% if t.status=='Selesai' %}selected{% endif %}>Selesai</option>
+                                        <option {% if t.status=='Ditutup' %}selected{% endif %}>Ditutup</option>
+                                    </select>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not tickets %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-4x mb-3 text-light"></i>
+                        <h5>Belum ada keluhan yang dilaporkan.</h5>
+                        {% if session.role == 'mahasiswa' %}
+                            <a href="{{ url_for('buat_laporan') }}" class="btn btn-primary mt-2 rounded-pill px-4">
+                                <i class="fas fa-plus me-1"></i> Buat Laporan Pertama
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

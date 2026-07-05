@@ -4,92 +4,502 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Suara Kampus - ITGarut{% endblock %}</title>
+    
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <style>
-        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
-        .navbar-custom { background-color: #003366; }
-        .logo-img { height: 45px; margin-right: 10px; background: transparent !important; }
-        .btn-itg { background-color: #0055a4; color: white; }
-        .btn-itg:hover { background-color: #004488; color: white; }
-        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; }
-        .footer { background: #343a40; color: #adb5bd; padding: 20px 0; margin-top: 50px; }
-        /* Mobile Bottom Nav */
-        .bottom-nav { background: white; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; z-index: 1000; padding: 10px 0; }
-        .bottom-nav a { color: #6c757d; text-decoration: none; font-size: 12px; }
-        .bottom-nav a.active { color: #003366; font-weight: 600; }
-        .bottom-nav i { font-size: 20px; display: block; margin-bottom: 2px; }
+        :root {
+            --primary: #003366;
+            --primary-light: #0055a4;
+            --primary-dark: #002244;
+            --background: #F8F9FA;
+            --dark: #343A40;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+        
+        body { 
+            background: var(--background); 
+            font-family: 'Inter', sans-serif; 
+            padding-top: 78px;
+            padding-bottom: 80px;
+        }
+        
+        @media (min-width: 768px) {
+            body { padding-bottom: 0; }
+        }
+        
+        /* Navbar */
+        .navbar-custom { 
+            background: rgba(0, 51, 102, 0.98); 
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .logo-img { 
+            height: 42px; 
+            margin-right: 12px; 
+            background: white;
+            border-radius: 8px;
+            padding: 4px;
+        }
+        
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem !important;
+        }
+        
+        .nav-link:hover {
+            color: rgba(255,255,255,0.9) !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Buttons */
+        .btn-itg { 
+            background: linear-gradient(135deg, var(--primary-light), var(--primary)); 
+            color: white; 
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-itg:hover { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);
+        }
+        
+        /* Cards */
+        .card { 
+            border: none; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); 
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Footer */
+        .footer { 
+            background: var(--dark); 
+            color: #adb5bd; 
+            padding: 30px 0; 
+            margin-top: 60px; 
+        }
+        
+        /* Bottom Navigation (Mobile) */
+        .bottom-nav { 
+            background: rgba(255,255,255,0.98); 
+            backdrop-filter: blur(12px);
+            border-top: 1px solid #e9ecef; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            width: 100%; 
+            z-index: 1050; 
+            padding: 8px 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            min-width: 60px;
+        }
+        
+        .bottom-nav-item:hover {
+            color: var(--primary);
+            background: rgba(0, 51, 102, 0.05);
+        }
+        
+        .bottom-nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        /* Center FAB Button */
+        .bottom-nav-fab {
+            position: relative;
+            top: -20px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white !important;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 51, 102, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .bottom-nav-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 51, 102, 0.5);
+        }
+        
+        .bottom-nav-fab i {
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        /* Notification Badge */
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        /* Dropdown */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 8px;
+        }
+        
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 500;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--primary);
+        }
+        
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 12px;
+        }
+        
+        /* Hide bottom nav on desktop */
+        @media (min-width: 768px) {
+            .bottom-nav {
+                display: none !important;
+            }
+        }
+        
+        /* Page shell */
+        .page-shell { 
+            min-height: calc(100vh - 200px);
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark sticky-top">
+    <!-- TOP NAVIGATION (Desktop & Mobile) -->
+    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='images/logo-itg.png') }}" alt="Logo ITG" class="logo-img">
-                <span class="fw-bold">Suara Kampus</span>
+                <span>Suara Kampus</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     {% if session.user_id %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}"><i class="fas fa-folder-open me-1"></i>Keluhan</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('riwayat_aspirasi') }}"><i class="fas fa-lightbulb me-1"></i>Aspirasi</a></li>
-                        <li class="nav-item"><a class="nav-link btn btn-outline-light btn-sm ms-2" href="{{ url_for('logout') }}">Logout</a></li>
+                        <!-- USER SUDAH LOGIN -->
+                        
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-chart-line me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        
+                        <!-- Dropdown Laporan -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="laporanDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-file-alt me-1"></i>Laporan
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="laporanDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('buat_laporan') }}">
+                                        <i class="fas fa-plus-circle me-2 text-primary"></i>Buat Pengaduan
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('buat_laporan_dosen') }}">
+                                        <i class="fas fa-chalkboard-teacher me-2 text-primary"></i>Laporan Dosen
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                        <i class="fas fa-history me-2 text-primary"></i>Riwayat Laporan
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Aspirasi -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('riwayat_aspirasi') }}">
+                                <i class="fas fa-lightbulb me-1"></i>Aspirasi
+                            </a>
+                        </li>
+                        
+                        <!-- FAQ -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('faq') }}">
+                                <i class="fas fa-question-circle me-1"></i>FAQ
+                            </a>
+                        </li>
+                        
+                        <!-- Admin Panel (Hanya untuk admin) -->
+                        {% if session.role == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" href="{{ url_for('dashboard') }}">
+                                    <i class="fas fa-shield-alt me-1"></i>Admin Panel
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <!-- Notifikasi -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" id="notifList" aria-labelledby="notifDropdown" style="min-width: 300px;">
+                                <li><h6 class="dropdown-header">Notifikasi</h6></li>
+                                <li><span class="dropdown-item text-muted small">Belum ada notifikasi</span></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Logout -->
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light btn-sm ms-2 rounded-pill px-3" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </li>
+                        
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Beranda</a></li>
-                        <li class="nav-item {% if request.endpoint == 'login' %}d-none{% endif %}"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
-                        <li class="nav-item {% if request.endpoint == 'register' %}d-none{% endif %}"><a class="nav-link" href="{{ url_for('register') }}">Daftar</a></li>
+                        <!-- USER BELUM LOGIN (TAMU) -->
+                        
+                        <!-- Sembunyikan menu jika di halaman login/register -->
+                        {% if request.endpoint != 'login' and request.endpoint != 'register' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('index') }}">Beranda</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('faq') }}">FAQ</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% if request.endpoint != 'login' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% if request.endpoint != 'register' %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-light btn-sm ms-2 rounded-pill px-3" href="{{ url_for('register') }}">
+                                    <i class="fas fa-user-plus me-1"></i>Daftar
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4 mb-5 pb-5">
+    <!-- MAIN CONTENT -->
+    <div class="container page-shell py-4">
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3" role="alert">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' if category == 'danger' else 'info-circle' }} me-2"></i>
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        
+        <!-- Page Content -->
         {% block content %}{% endblock %}
     </div>
 
     <!-- BOTTOM NAVIGATION (Mobile Only) -->
-    <nav class="bottom-nav d-md-none d-lg-none d-xl-none">
-        <div class="container-fluid d-flex justify-content-around">
-            <a href="{{ url_for('index') }}" class="text-center {% if request.endpoint == 'index' %}active{% endif %}">
-                <i class="fas fa-home"></i>Beranda
-            </a>
-            <a href="{{ url_for('dashboard') }}" class="text-center {% if request.endpoint == 'dashboard' %}active{% endif %}">
-                <i class="fas fa-clipboard-list"></i>Lacak
-            </a>
-            <a href="{{ url_for('riwayat_aspirasi') }}" class="text-center {% if request.endpoint == 'riwayat_aspirasi' %}active{% endif %}">
-                <i class="fas fa-bullhorn"></i>Aspirasi
-            </a>
-            <a href="{{ url_for('faq') }}" class="text-center {% if request.endpoint == 'faq' %}active{% endif %}">
-                <i class="fas fa-book"></i>FAQ
-            </a>
+    <nav class="bottom-nav d-md-none">
+        <div class="container-fluid d-flex justify-content-around align-items-end px-2">
+            {% if session.user_id %}
+                <!-- User Login -->
+                <a href="{{ url_for('dashboard') }}" class="bottom-nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                
+                <a href="{{ url_for('dashboard') }}" class="bottom-nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Laporan</span>
+                </a>
+                
+                <!-- FAB Button - Buat Laporan -->
+                <a href="{{ url_for('buat_laporan') }}" class="bottom-nav-fab">
+                    <i class="fas fa-plus"></i>
+                </a>
+                
+                <a href="{{ url_for('riwayat_aspirasi') }}" class="bottom-nav-item {% if request.endpoint == 'riwayat_aspirasi' %}active{% endif %}">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Aspirasi</span>
+                </a>
+                
+                <a href="{{ url_for('dashboard') }}" class="bottom-nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </a>
+            {% else %}
+                <!-- User Tamu -->
+                <a href="{{ url_for('index') }}" class="bottom-nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                
+                <a href="{{ url_for('faq') }}" class="bottom-nav-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>FAQ</span>
+                </a>
+                
+                <a href="{{ url_for('login') }}" class="bottom-nav-item {% if request.endpoint == 'login' %}active{% endif %}">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                
+                <a href="{{ url_for('register') }}" class="bottom-nav-item {% if request.endpoint == 'register' %}active{% endif %}">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Daftar</span>
+                </a>
+            {% endif %}
         </div>
     </nav>
 
+    <!-- FOOTER (Desktop Only) -->
     <footer class="footer text-center d-none d-md-block">
         <div class="container">
-            <p class="mb-0">&copy; 2026 Suara Kampus | Institut Teknologi Garut</p>
-            <small>Sistem Pengaduan Fasilitas Terpadu</small>
+            <p class="mb-1 fw-bold">&copy; 2026 Suara Kampus | Institut Teknologi Garut</p>
+            <small>Sistem Pengaduan & Aspirasi Mahasiswa Terpadu</small>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    
+    <script>
+        // SweetAlert2 for Flash Messages
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(function (alert) {
+                const message = alert.textContent.trim();
+                const category = alert.classList.contains('alert-success') ? 'success' : 
+                               alert.classList.contains('alert-danger') ? 'error' : 'info';
+                
+                if (message) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: category,
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Socket.IO for Real-time Notifications
+        document.addEventListener('DOMContentLoaded', function () {
+            const socket = io();
+            const badge = document.getElementById('notifBadge');
+            const notifList = document.getElementById('notifList');
+
+            socket.on('connect', function () {
+                const userId = {{ session.user_id if session.user_id else 0 }};
+                socket.emit('join_notification', { user_id: userId });
+                console.log('Socket connected for notifications');
+            });
+
+            socket.on('new_notification', function (data) {
+                if (badge) {
+                    let count = parseInt(badge.textContent || '0', 10);
+                    count += 1;
+                    badge.textContent = count;
+                    badge.style.display = 'inline-block';
+                }
+
+                if (notifList) {
+                    const firstItem = notifList.querySelector('.dropdown-item.text-muted');
+                    if (firstItem) {
+                        firstItem.remove();
+                    }
+
+                    const item = document.createElement('li');
+                    item.innerHTML = `<span class="dropdown-item small">${data.message || 'Anda menerima notifikasi baru'}</span>`;
+                    notifList.insertBefore(item, notifList.firstChild.nextSibling);
+                }
+            });
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
 </body>
 </html>
