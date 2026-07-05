@@ -2,6 +2,7 @@ import os
 import io
 import re
 import uuid
+import tempfile
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from flask_socketio import SocketIO
 import pdfkit
@@ -27,7 +28,7 @@ socketio = SocketIO(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suara_kampus.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()  # Menggunakan direktori sementara yang diizinkan Vercel
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Max 5MB
 
 # ================= KONFIGURASI SESSION =================
@@ -46,7 +47,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'Suara Kamp
 mail = Mail(app)
 
 # Inisialisasi Database
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)  # Di-comment untuk menghindari error Read-Only di Vercel
 db = SQLAlchemy(app)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

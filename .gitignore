@@ -11,3 +11,6 @@ instance/
 *.db
 .env
 uploads/
+
+__pycache__/
+*.zip

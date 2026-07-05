@@ -9,7 +9,7 @@
                 <div>Identitas Anda akan disembunyikan secara otomatis. Laporan bersifat anonim.</div>
             </div>
             <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token if csrf_token is defined else '' }}"/>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Judul Laporan</label>
                     <input type="text" name="judul" class="form-control rounded-3" placeholder="Contoh: AC Ruang Lab 3 Tidak Dingin" required>
