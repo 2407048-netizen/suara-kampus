@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    // Native Node modules that must not be bundled (Next.js 14 syntax)
-    serverComponentsExternalPackages: ['better-sqlite3', 'nodemailer', 'bcryptjs'],
+    // nodemailer and bcryptjs are Node-only packages, must not be bundled
+    serverComponentsExternalPackages: ['nodemailer', 'bcryptjs'],
   },
   images: {
     remotePatterns: [

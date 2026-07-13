@@ -30,9 +30,9 @@ export async function POST(request: Request) {
     const now = new Date().toISOString();
 
     await db.prepare(`
-      INSERT INTO chat_messages (user_id, message, is_admin, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run(session.user_id, message, is_admin, now);
+      INSERT INTO chats (ticket_id, sender_id, message, is_read, created_at)
+      VALUES (0, ?, ?, 0, ?)
+    `).run(session.user_id, message, now);
 
     const sender_name = is_admin ? 'Admin' : session.nama;
 
@@ -63,9 +63,10 @@ export async function GET() {
     if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
     const messages = await db.prepare(`
-      SELECT c.*, u.nama as user_nama 
-      FROM chat_messages c 
-      LEFT JOIN users u ON c.user_id = u.id 
+      SELECT c.id, c.ticket_id, c.sender_id as user_id, c.message, c.created_at,
+             u.nama as user_nama, u.role
+      FROM chats c 
+      LEFT JOIN users u ON c.sender_id = u.id 
       ORDER BY c.created_at ASC 
       LIMIT 100
     `).all() as any[];
@@ -73,9 +74,9 @@ export async function GET() {
     const formatted = messages.map(msg => ({
       id: msg.id,
       user_id: msg.user_id,
-      sender_name: msg.is_admin ? 'Admin' : msg.user_nama,
+      sender_name: (msg.role === 'admin' || msg.role === 'staff') ? 'Admin' : msg.user_nama,
       message: msg.message,
-      is_admin: msg.is_admin,
+      is_admin: (msg.role === 'admin' || msg.role === 'staff') ? 1 : 0,
       timestamp: msg.created_at,
     }));
 

@@ -1,8 +1,10 @@
 -- ============================================================
--- Suara Kampus ITG - Turso Database Schema
--- Run this once on your Turso database to initialize tables
+-- Suara Kampus ITG - Turso Database Schema (Production)
+-- Jalankan sekali saja di database Turso Anda untuk inisialisasi.
+-- Gunakan: turso db shell <nama-db> < turso_schema.sql
 -- ============================================================
 
+-- USERS
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nim TEXT NOT NULL UNIQUE,
@@ -27,24 +29,37 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TEXT
 );
 
-CREATE TABLE IF NOT EXISTS laporan (
+-- REPORTS (Pengaduan Mahasiswa)
+CREATE TABLE IF NOT EXISTS reports (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
+  kategori_id INTEGER,
   judul TEXT NOT NULL,
   kategori TEXT,
+  prioritas TEXT DEFAULT 'Sedang',
   lokasi TEXT,
   deskripsi TEXT NOT NULL,
-  foto_url TEXT,
-  status TEXT DEFAULT 'pending',
-  prioritas TEXT DEFAULT 'normal',
-  catatan_admin TEXT,
+  foto TEXT,
+  bukti_path TEXT,
+  status TEXT DEFAULT 'Menunggu Persetujuan',
+  tanggapan_admin TEXT,
+  support_count INTEGER DEFAULT 0,
+  admin_response TEXT,
+  proof_file TEXT,
   is_deleted INTEGER DEFAULT 0,
   created_at TEXT,
   updated_at TEXT,
+  file_name TEXT,
+  file_size INTEGER,
+  file_type TEXT,
+  proof_file_name TEXT,
+  proof_file_size INTEGER,
+  proof_file_type TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS laporan_dosen (
+-- LECTURER REPORTS (Laporan Dosen)
+CREATE TABLE IF NOT EXISTS lecturer_reports (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   nama_dosen TEXT NOT NULL,
@@ -54,15 +69,20 @@ CREATE TABLE IF NOT EXISTS laporan_dosen (
   judul TEXT NOT NULL,
   kronologi TEXT NOT NULL,
   dampak TEXT,
-  bukti_url TEXT,
-  status TEXT DEFAULT 'pending',
-  catatan_admin TEXT,
+  bukti_path TEXT,
+  status TEXT DEFAULT 'Diajukan',
+  tanggapan_admin TEXT,
+  is_archived INTEGER DEFAULT 0,
   is_deleted INTEGER DEFAULT 0,
   created_at TEXT,
   updated_at TEXT,
+  file_name TEXT,
+  file_size INTEGER,
+  file_type TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- ASPIRATIONS (Aspirasi & Saran)
 CREATE TABLE IF NOT EXISTS aspirations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
@@ -79,6 +99,7 @@ CREATE TABLE IF NOT EXISTS aspirations (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- ASPIRATION VOTES
 CREATE TABLE IF NOT EXISTS aspiration_votes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   aspiration_id INTEGER NOT NULL,
@@ -90,28 +111,40 @@ CREATE TABLE IF NOT EXISTS aspiration_votes (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS chats (
+-- ASPIRATION REACTIONS (alternative vote table)
+CREATE TABLE IF NOT EXISTS aspiration_reactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  laporan_id INTEGER NOT NULL,
+  aspirasi_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
-  pesan TEXT NOT NULL,
-  is_admin INTEGER DEFAULT 0,
-  created_at TEXT,
-  FOREIGN KEY (laporan_id) REFERENCES laporan(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  tipe TEXT NOT NULL,
+  created_at TEXT
 );
 
+-- CHATS (per tiket laporan)
+-- ticket_id = reports.id ; sender_id = users.id
+CREATE TABLE IF NOT EXISTS chats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ticket_id INTEGER NOT NULL,
+  sender_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  is_read INTEGER DEFAULT 0,
+  created_at TEXT,
+  FOREIGN KEY (ticket_id) REFERENCES reports(id),
+  FOREIGN KEY (sender_id) REFERENCES users(id)
+);
+
+-- NOTIFICATIONS
 CREATE TABLE IF NOT EXISTS notifications (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
-  judul TEXT NOT NULL,
-  pesan TEXT NOT NULL,
+  message TEXT NOT NULL,
   is_read INTEGER DEFAULT 0,
-  laporan_id INTEGER,
+  link TEXT,
   created_at TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- ACTIVITY LOGS
 CREATE TABLE IF NOT EXISTS activity_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER,
@@ -121,8 +154,27 @@ CREATE TABLE IF NOT EXISTS activity_logs (
   created_at TEXT
 );
 
--- Seed admin account (password: admin123)
--- password_hash is bcrypt of 'admin123'
+-- CATEGORIES
+CREATE TABLE IF NOT EXISTS categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nama TEXT NOT NULL,
+  deskripsi TEXT,
+  created_at TEXT,
+  updated_at TEXT
+);
+
+-- PDF REPORTS
+CREATE TABLE IF NOT EXISTS pdf_reports (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  report_id INTEGER,
+  file_path TEXT,
+  generated_at TEXT
+);
+
+-- ============================================================
+-- SEED: Admin Account (password: admin123)
+-- bcrypt hash of 'admin123'
+-- ============================================================
 INSERT OR IGNORE INTO users (nim, nama, email, password_hash, role, status_aktif, is_deleted, is_verified, created_at, updated_at)
 VALUES (
   'ADMIN001',
@@ -136,3 +188,14 @@ VALUES (
   datetime('now'),
   datetime('now')
 );
+
+-- ============================================================
+-- SEED: Default Categories
+-- ============================================================
+INSERT OR IGNORE INTO categories (nama, deskripsi, created_at, updated_at) VALUES
+  ('Infrastruktur', 'Masalah bangunan, fasilitas fisik kampus', datetime('now'), datetime('now')),
+  ('Akademik', 'Masalah perkuliahan, nilai, dan akademik', datetime('now'), datetime('now')),
+  ('Layanan Administrasi', 'Masalah administrasi dan pelayanan', datetime('now'), datetime('now')),
+  ('Kebersihan & Lingkungan', 'Masalah kebersihan dan lingkungan kampus', datetime('now'), datetime('now')),
+  ('Teknologi & IT', 'Masalah sistem informasi dan teknologi', datetime('now'), datetime('now')),
+  ('Lainnya', 'Kategori lainnya', datetime('now'), datetime('now'));
