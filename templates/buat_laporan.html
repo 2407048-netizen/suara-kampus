@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Buat Laporan Baru - Suara Kampus ITG{% endblock %}
+
+{% block content %}
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .preview-container {
+        display: none;
+        margin-top: 15px;
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        background: #f8f9fa;
+    }
+    .preview-container img {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="fas fa-edit fs-5"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold text-dark mb-0">Buat Laporan Pengaduan</h4>
+                    <p class="text-muted small mb-0">Sampaikan keluhan Anda terkait fasilitas atau layanan kampus.</p>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="{{ url_for('buat_pengaduan') }}" method="POST" enctype="multipart/form-data" id="laporanForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+                    
+                    <div class="mb-3">
+                        <label for="judul" class="form-label fw-semibold">Judul Laporan <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="judul" name="judul" value="{{ judul|default('') }}" placeholder="Contoh: AC Kelas F12 Mati" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kategori" class="form-label fw-semibold">Kategori <span class="text-danger">*</span></label>
+                        <select class="form-select" id="kategori" name="kategori" required>
+                            <option value="" disabled {% if not kategori %}selected{% endif %}>-- Pilih Kategori --</option>
+                            <option value="Fasilitas Kelas" {% if kategori == 'Fasilitas Kelas' %}selected{% endif %}>Fasilitas Kelas</option>
+                            <option value="Fasilitas Lab" {% if kategori == 'Fasilitas Lab' %}selected{% endif %}>Fasilitas Lab</option>
+                            <option value="Fasilitas Kampus" {% if kategori == 'Fasilitas Kampus' %}selected{% endif %}>Fasilitas Kampus (Umum)</option>
+                            <option value="Himpunan Mahasiswa" {% if kategori == 'Himpunan Mahasiswa' %}selected{% endif %}>Himpunan Mahasiswa</option>
+                            <option value="Layanan TUK" {% if kategori == 'Layanan TUK' %}selected{% endif %}>Layanan TUK</option>
+                            <option value="Layanan PRODI" {% if kategori == 'Layanan PRODI' %}selected{% endif %}>Layanan PRODI</option>
+                            <option value="Layanan Kampus" {% if kategori == 'Layanan Kampus' %}selected{% endif %}>Layanan Kampus (Lainnya)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="deskripsi" class="form-label fw-semibold">Deskripsi Detail <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" placeholder="Ceritakan keluhan Anda secara detail agar mudah dipahami..." required>{{ deskripsi|default('') }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="foto" class="form-label fw-semibold">Upload Bukti Foto (Opsional)</label>
+                        <input class="form-control" type="file" id="foto" name="foto" accept=".jpg, .jpeg, .png" onchange="previewImage(event)">
+                        <div class="form-text">Format didukung: JPG, PNG. Maksimal 5MB.</div>
+                        
+                        <!-- Image Preview -->
+                        <div class="preview-container" id="previewContainer">
+                            <span class="text-muted small d-block mb-2">Preview Gambar:</span>
+                            <img id="imagePreview" src="#" alt="Preview">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-light border px-4">Batal</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold" id="btnSubmit">
+                            <i class="fas fa-paper-plane me-2"></i>Kirim Laporan
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const file = input.files[0];
+
+        if (file) {
+            // Check file size (5MB = 5 * 1024 * 1024 bytes)
+            if (file.size > 5242880) {
+                alert('Ukuran file terlalu besar! Maksimal 5MB.');
+                input.value = '';
+                previewContainer.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

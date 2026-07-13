@@ -82,11 +82,8 @@ export default function LaporanDosenClient({ user }: { user?: any }) {
   };
 
   return (
-    <>
-      <Navbar user={user} />
-      <div className="container" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        <div className="row justify-content-center mb-5 mt-4">
-          <div className="col-lg-8">
+    <div className="row justify-content-center mb-5 mt-4">
+      <div className="col-lg-8">
             <div className="alert alert-warning border-warning shadow-sm rounded-4 mb-4 d-flex" role="alert">
               <div className="me-3 fs-3 text-warning">
                 <i className="fas fa-exclamation-triangle"></i>
@@ -179,12 +176,8 @@ export default function LaporanDosenClient({ user }: { user?: any }) {
                   </div>
                 </form>
               </div>
-            </div>
-          </div>
         </div>
       </div>
-      <BottomNav user={user} />
-      <Footer />
-    </>
+    </div>
   );
 }

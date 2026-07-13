@@ -28,8 +28,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const admin_response = formData.get('admin_response')?.toString().trim();
     const proof_file = formData.get('proof_file') as File;
     
-    const getReport = db.prepare('SELECT * FROM reports WHERE id = ?');
-    const ticket = getReport.get(params.id) as any;
+    const ticket = await db.prepare('SELECT * FROM reports WHERE id = ?').get(params.id) as any;
     
     if (!ticket) {
       return NextResponse.json({ success: false, message: 'Laporan tidak ditemukan' }, { status: 404 });
@@ -43,19 +42,19 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const now = new Date().toISOString();
     
-    db.prepare(`
+    await db.prepare(`
       UPDATE reports 
       SET status = COALESCE(?, status), admin_response = COALESCE(?, admin_response), proof_file = ?, updated_at = ?
       WHERE id = ?
     `).run(status_baru || null, admin_response || null, proof_filename, now, params.id);
     
     // Notify
-    db.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').run(
+    await db.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').run(
       ticket.user_id, `Status tiket "${ticket.judul}" berubah menjadi ${status_baru || ticket.status}`, now
     );
     
     if (status_baru === 'Selesai' && ticket.status !== 'Selesai') {
-      const user = db.prepare('SELECT email FROM users WHERE id = ?').get(ticket.user_id) as any;
+      const user = await db.prepare('SELECT email FROM users WHERE id = ?').get(ticket.user_id) as any;
       if (user && user.email) {
         try {
           await transporter.sendMail({

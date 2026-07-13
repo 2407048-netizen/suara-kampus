@@ -19,8 +19,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     
     const valid_statuses = ['Diajukan', 'Ditinjau', 'Diproses', 'Selesai', 'Ditolak'];
     
-    const getReport = db.prepare('SELECT * FROM lecturer_reports WHERE id = ?');
-    const laporan = getReport.get(params.id) as any;
+    const laporan = await db.prepare('SELECT * FROM lecturer_reports WHERE id = ?').get(params.id) as any;
     
     if (!laporan) {
       return NextResponse.json({ success: false, message: 'Laporan tidak ditemukan' }, { status: 404 });
@@ -33,18 +32,18 @@ export async function POST(request: Request, { params }: { params: { id: string 
     
     const now = new Date().toISOString();
     
-    db.prepare(`
+    await db.prepare(`
       UPDATE lecturer_reports 
       SET status = ?, tanggapan_admin = COALESCE(?, tanggapan_admin), is_archived = ?, updated_at = ?
       WHERE id = ?
     `).run(currentStatus, tanggapan_admin || null, is_archived, now, params.id);
     
-    db.prepare('INSERT INTO activity_logs (user_id, action, details, created_at) VALUES (?, ?, ?, ?)').run(
+    await db.prepare('INSERT INTO activity_logs (user_id, action, details, created_at) VALUES (?, ?, ?, ?)').run(
       session.user_id, `update_laporan_dosen_${params.id}`, `Status: ${laporan.status} -> ${currentStatus}`, now
     );
     
     // Notify
-    db.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').run(
+    await db.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').run(
       laporan.user_id, `Laporan dosen "${laporan.judul}" berubah status menjadi ${currentStatus}`, now
     );
     

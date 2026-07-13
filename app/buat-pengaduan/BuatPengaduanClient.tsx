@@ -72,11 +72,8 @@ export default function BuatPengaduanClient({ user }: { user?: any }) {
   };
 
   return (
-    <>
-      <Navbar user={user} />
-      <div className="container" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        <div className="row justify-content-center mb-5 mt-4">
-          <div className="col-lg-8">
+    <div className="row justify-content-center mb-5 mt-4">
+      <div className="col-lg-8">
             <div className="card shadow-sm border-0 rounded-4">
               <div className="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex align-items-center">
                 <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: '45px', height: '45px' }}>
@@ -165,12 +162,8 @@ export default function BuatPengaduanClient({ user }: { user?: any }) {
                   </div>
                 </form>
               </div>
-            </div>
-          </div>
         </div>
       </div>
-      <BottomNav user={user} />
-      <Footer />
-    </>
+    </div>
   );
 }

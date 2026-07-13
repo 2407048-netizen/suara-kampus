@@ -68,10 +68,7 @@ export default function AspirasiClient({ user, aspirasiList, q, sort }: { user: 
   };
 
   return (
-    <>
-      <Navbar user={user} />
-      <div className="container" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        <div className="row g-4 mt-3 mb-5">
+    <div className="row g-4 mt-3 mb-5">
           <div className="col-12">
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body p-4">
@@ -195,9 +192,5 @@ export default function AspirasiClient({ user, aspirasiList, q, sort }: { user: 
             )}
           </div>
         </div>
-      </div>
-      <BottomNav user={user} />
-      <Footer />
-    </>
   );
 }

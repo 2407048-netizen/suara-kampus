@@ -6,3 +6,5 @@ node_modules/
 instance/
 *.sqlite
 *.db
+
+.vercel

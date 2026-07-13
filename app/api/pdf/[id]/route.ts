@@ -11,8 +11,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const session = await verifyJWT(token);
     if (!session) return NextResponse.redirect(new URL('/login', request.url));
 
-    const getReport = db.prepare('SELECT r.*, u.nama as user_nama, u.nim FROM reports r LEFT JOIN users u ON r.user_id = u.id WHERE r.id = ?');
-    const ticket = getReport.get(params.id) as any;
+    const ticket = await db.prepare('SELECT r.*, u.nama as user_nama, u.nim FROM reports r LEFT JOIN users u ON r.user_id = u.id WHERE r.id = ?').get(params.id) as any;
 
     if (!ticket) {
       return NextResponse.json({ success: false, message: 'Laporan tidak ditemukan' }, { status: 404 });

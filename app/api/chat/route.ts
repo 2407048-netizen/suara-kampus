@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { verifyJWT } from '@/lib/auth';
@@ -27,7 +29,7 @@ export async function POST(request: Request) {
     const is_admin = session.role === 'admin' || session.role === 'staff' ? 1 : 0;
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO chat_messages (user_id, message, is_admin, created_at)
       VALUES (?, ?, ?, ?)
     `).run(session.user_id, message, is_admin, now);
@@ -60,7 +62,7 @@ export async function GET() {
     const session = await verifyJWT(token);
     if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
-    const messages = db.prepare(`
+    const messages = await db.prepare(`
       SELECT c.*, u.nama as user_nama 
       FROM chat_messages c 
       LEFT JOIN users u ON c.user_id = u.id 

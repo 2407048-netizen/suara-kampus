@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Laporan Kinerja Dosen - Suara Kampus ITG{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
+                <h4 class="fw-bold text-primary mb-0">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>
+                    Laporan Kinerja Dosen
+                </h4>
+                <p class="text-muted small mb-0 mt-1">
+                    Sampaikan laporan kinerja dosen secara profesional dan terstruktur
+                </p>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Warning Etika -->
+                <div class="alert alert-warning border-0 shadow-sm mb-4">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Peringatan Etika Pelaporan:
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li><strong>DILARANG KERAS</strong> memfoto wajah dosen secara langsung</li>
+                        <li>Laporan <strong>TIDAK BOLEH</strong> mengandung unsur penghinaan atau pencemaran nama baik</li>
+                        <li>Foto bukti harus bersifat <strong>informatif</strong> (ruang kelas kosong, screenshot materi, jadwal, dll)</li>
+                        <li>Laporan palsu akan diproses sesuai aturan akademik kampus</li>
+                        <li>Identitas pelapor <strong>hanya terlihat oleh admin</strong> untuk tindak lanjut profesional</li>
+                    </ul>
+                </div>
+
+                <!-- Info Batas Harian -->
+                <div class="alert alert-info border-0 mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Batas Pengiriman:</strong> Maksimal <strong>1 laporan setiap 2 hari</strong> per mahasiswa.
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" id="formLaporanDosen">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    
+                    <!-- Informasi Akademik -->
+                    <h6 class="text-muted mb-3 mt-2">
+                        <i class="fas fa-graduation-cap me-2"></i>Informasi Akademik
+                    </h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Nama Dosen <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="nama_dosen" class="form-control" required 
+                                   placeholder="Contoh: Dr. Ahmad Fauzi, M.Kom.">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Mata Kuliah <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="mata_kuliah" class="form-control" required 
+                                   placeholder="Contoh: Pemrograman Web">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Kelas</label>
+                            <input type="text" name="kelas" class="form-control" 
+                                   placeholder="Contoh: 3A / SI-A">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Semester</label>
+                            <select name="semester" class="form-select">
+                                <option value="">Pilih Semester</option>
+                                <option value="1">Semester 1 (Ganjil)</option>
+                                <option value="2">Semester 2 (Genap)</option>
+                                <option value="3">Semester 3 (Ganjil)</option>
+                                <option value="4">Semester 4 (Genap)</option>
+                                <option value="5">Semester 5 (Ganjil)</option>
+                                <option value="6">Semester 6 (Genap)</option>
+                                <option value="7">Semester 7 (Ganjil)</option>
+                                <option value="8">Semester 8 (Genap)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Detail Laporan -->
+                    <h6 class="text-muted mb-3">
+                        <i class="fas fa-file-alt me-2"></i>Detail Laporan
+                    </h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Judul Laporan <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="judul" class="form-control" required 
+                               placeholder="Contoh: Dosen Tidak Hadir 3 Kali Berturut-turut Tanpa Keterangan">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Kronologi Kejadian <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="kronologi" class="form-control" rows="5" required 
+                                  placeholder="Jelaskan kronologi secara detail:
+- Kapan kejadiannya? (tanggal & jam)
+- Di mana lokasinya?
+- Apa yang terjadi?
+- Saksi (jika ada)"></textarea>
+                        <small class="text-muted">Minimal 50 karakter</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dampak terhadap Pembelajaran</label>
+                        <textarea name="dampak" class="form-control" rows="3" 
+                                  placeholder="Jelaskan dampak kejadian ini terhadap proses pembelajaran Anda dan teman-teman sekelas..."></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            Bukti Pendukung <span class="text-danger">*</span>
+                        </label>
+                        <input type="file" name="bukti" class="form-control" accept="image/*,.pdf" required
+                               id="inputBukti">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Format: PNG, JPG, JPEG, PDF. Maksimal 5MB. 
+                            <strong class="text-danger">JANGAN foto wajah dosen!</strong>
+                        </small>
+                        
+                        <!-- Preview Foto -->
+                        <div id="previewBukti" class="mt-2 d-none">
+                            <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                    </div>
+
+                    <!-- Persetujuan -->
+                    <div class="form-check mb-4 p-3 bg-light rounded-3">
+                        <input class="form-check-input" type="checkbox" id="persetujuan" required>
+                        <label class="form-check-label small" for="persetujuan">
+                            Saya menyatakan bahwa laporan ini adalah <strong>benar</strong> dan dibuat dengan 
+                            <strong>itikad baik</strong> untuk perbaikan kualitas pembelajaran. Saya memahami 
+                            bahwa laporan palsu dapat dikenakan sanksi akademik.
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill fw-bold">
+                            <i class="fas fa-paper-plane me-2"></i>Kirim Laporan
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Preview foto bukti
+const inputBukti = document.getElementById('inputBukti');
+const previewBukti = document.getElementById('previewBukti');
+const previewImg = document.getElementById('previewImg');
+
+inputBukti.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Validasi ukuran (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File terlalu besar!',
+                text: 'Maksimal ukuran file adalah 5MB'
+            });
+            this.value = '';
+            previewBukti.classList.add('d-none');
+            return;
+        }
+        
+        // Validasi tipe
+        if (!file.type.match('image.*') && file.type !== 'application/pdf') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Format tidak valid!',
+                text: 'Gunakan format gambar (JPG, PNG) atau PDF'
+            });
+            this.value = '';
+            return;
+        }
+        
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewBukti.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewBukti.classList.add('d-none');
+        }
+    }
+});
+
+// Validasi form
+document.getElementById('formLaporanDosen').addEventListener('submit', function(e) {
+    const kronologi = document.querySelector('textarea[name="kronologi"]').value.trim();
+    
+    if (kronologi.length < 50) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'warning',
+            title: 'Kronologi terlalu singkat',
+            text: 'Kronologi minimal 50 karakter agar dapat diproses dengan baik.'
+        });
+        return false;
+    }
+});
+</script>
+{% endblock %}

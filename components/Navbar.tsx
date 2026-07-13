@@ -2,93 +2,135 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function Navbar({ user }: { user: any }) {
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <nav className={`navbar navbar-expand-lg navbar-custom fixed-top ${isScrolled ? 'shadow-sm' : ''}`}>
-      <div className="container">
-        <Link href="/" className="navbar-brand d-flex align-items-center text-white">
-          <div className="logo-img d-flex align-items-center justify-content-center">
-            <span className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>ITG</span>
-          </div>
-          Suara Kampus
-        </Link>
-        <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-center">
-            <li className="nav-item">
-              <Link href="/" className={`nav-link text-white ${pathname === '/' ? 'fw-bold' : 'opacity-75'}`}>
-                Beranda
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link href="/faq" className={`nav-link text-white ${pathname === '/faq' ? 'fw-bold' : 'opacity-75'}`}>
-                FAQ
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link href="/stats" className={`nav-link text-white ${pathname === '/stats' ? 'fw-bold' : 'opacity-75'}`}>
-                Statistik
-              </Link>
-            </li>
+    <nav className="navbar navbar-expand-lg navbar-custom navbar-dark fixed-top">
+        <div className="container">
+            <Link className="navbar-brand d-flex align-items-center" href="/">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/logo-itg.png" alt="Logo ITG" className="logo-img" />
+                <span>Suara Kampus</span>
+            </Link>
             
-            {user ? (
-              <li className="nav-item dropdown ms-lg-3 mt-3 mt-lg-0">
-                <a className="nav-link dropdown-toggle text-white d-flex align-items-center bg-white bg-opacity-10 px-3 py-2 rounded-pill" 
-                   href="#" role="button" data-bs-toggle="dropdown">
-                  <div className="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center me-2" 
-                       style={{ width: '28px', height: '28px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                    {user.nama ? user.nama.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <span className="me-1">{user.nama}</span>
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-4">
-                  <li><h6 className="dropdown-header">Login sebagai: {user.role}</h6></li>
-                  {user.role === 'admin' || user.role === 'staff' ? (
-                    <>
-                      <li><Link className="dropdown-item py-2" href="/admin/dashboard"><i className="fas fa-chart-line fa-fw me-2 text-primary"></i> Dashboard Admin</Link></li>
-                      <li><Link className="dropdown-item py-2" href="/admin/reports"><i className="fas fa-list-alt fa-fw me-2 text-info"></i> Kelola Laporan</Link></li>
-                      <li><Link className="dropdown-item py-2" href="/admin/laporan-dosen"><i className="fas fa-chalkboard-teacher fa-fw me-2 text-warning"></i> Laporan Dosen</Link></li>
-                    </>
-                  ) : (
-                    <>
-                      <li><Link className="dropdown-item py-2" href="/dashboard"><i className="fas fa-columns fa-fw me-2 text-primary"></i> Dashboard</Link></li>
-                      <li><Link className="dropdown-item py-2" href="/buat-pengaduan"><i className="fas fa-edit fa-fw me-2 text-success"></i> Buat Laporan</Link></li>
-                      <li><Link className="dropdown-item py-2" href="/laporan-dosen"><i className="fas fa-chalkboard-teacher fa-fw me-2 text-warning"></i> Laporan Dosen</Link></li>
-                    </>
-                  )}
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <a className="dropdown-item py-2 text-danger" href="/api/auth/logout">
-                      <i className="fas fa-sign-out-alt fa-fw me-2"></i> Keluar
-                    </a>
-                  </li>
+            <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span className="navbar-toggler-icon"></span>
+            </button>
+            
+            <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav ms-auto align-items-lg-center">
+                    {user ? (
+                        <>
+                            {/* USER SUDAH LOGIN */}
+                            <li className="nav-item">
+                                <Link className="nav-link" href="/dashboard">
+                                    <i className="fas fa-chart-line me-1"></i>Dashboard
+                                </Link>
+                            </li>
+                            
+                            {/* Dropdown Laporan */}
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle" href="#" id="laporanDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i className="fas fa-file-alt me-1"></i>Laporan
+                                </a>
+                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="laporanDropdown">
+                                    <li>
+                                        <Link className="dropdown-item" href="/buat-pengaduan">
+                                            <i className="fas fa-plus-circle me-2 text-primary"></i>Buat Pengaduan
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" href="/buat-pengaduan">
+                                            <i className="fas fa-chalkboard-teacher me-2 text-primary"></i>Laporan Dosen
+                                        </Link>
+                                    </li>
+                                    <li><hr className="dropdown-divider" /></li>
+                                    <li>
+                                        <Link className="dropdown-item" href="/dashboard">
+                                            <i className="fas fa-history me-2 text-primary"></i>Riwayat Laporan
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            {/* Aspirasi */}
+                            <li className="nav-item">
+                                <Link className="nav-link" href="/riwayat-aspirasi">
+                                    <i className="fas fa-lightbulb me-1"></i>Aspirasi
+                                </Link>
+                            </li>
+                            
+                            {/* FAQ */}
+                            <li className="nav-item">
+                                <Link className="nav-link" href="/faq">
+                                    <i className="fas fa-question-circle me-1"></i>FAQ
+                                </Link>
+                            </li>
+                            
+                            {/* Admin Panel */}
+                            {user.role === 'admin' && (
+                                <li className="nav-item">
+                                    <Link className="nav-link text-warning" href="/dashboard">
+                                        <i className="fas fa-shield-alt me-1"></i>Admin Panel
+                                    </Link>
+                                </li>
+                            )}
+                            
+                            {/* Notifikasi */}
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i className="fas fa-bell"></i>
+                                    <span id="notifBadge" className="notif-badge" style={{ display: 'none' }}>0</span>
+                                </a>
+                                <ul className="dropdown-menu dropdown-menu-end" id="notifList" aria-labelledby="notifDropdown" style={{ minWidth: '300px' }}>
+                                    <li><h6 className="dropdown-header">Notifikasi</h6></li>
+                                    <li><span className="dropdown-item text-muted small">Belum ada notifikasi</span></li>
+                                </ul>
+                            </li>
+                            
+                            {/* Logout */}
+                            <li className="nav-item">
+                                <a className="nav-link btn btn-outline-light btn-sm ms-2 rounded-pill px-3" href="/api/auth/logout">
+                                    <i className="fas fa-sign-out-alt me-1"></i>Logout
+                                </a>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            {/* USER BELUM LOGIN (TAMU) */}
+                            {pathname !== '/login' && pathname !== '/register' && (
+                                <>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href="/">Beranda</Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href="/faq">FAQ</Link>
+                                    </li>
+                                </>
+                            )}
+                            
+                            {pathname !== '/login' && (
+                                <li className="nav-item">
+                                    <Link className="nav-link" href="/login">
+                                        <i className="fas fa-sign-in-alt me-1"></i>Login
+                                    </Link>
+                                </li>
+                            )}
+                            
+                            {pathname !== '/register' && (
+                                <li className="nav-item">
+                                    <Link className="nav-link btn btn-light btn-sm ms-2 rounded-pill px-3" href="/register">
+                                        <i className="fas fa-user-plus me-1"></i>Daftar
+                                    </Link>
+                                </li>
+                            )}
+                        </>
+                    )}
                 </ul>
-              </li>
-            ) : (
-              <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
-                <Link href="/login" className="btn btn-light text-primary rounded-pill px-4 fw-bold shadow-sm">
-                  Login <i className="fas fa-arrow-right ms-1"></i>
-                </Link>
-              </li>
-            )}
-          </ul>
+            </div>
         </div>
-      </div>
     </nav>
   );
 }

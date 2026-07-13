@@ -1,11 +1,10 @@
+export const dynamic = 'force-dynamic';
+
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/lib/auth';
 import db from '@/lib/db';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import BottomNav from '@/components/BottomNav';
+import { redirect } from 'next/navigation';
 
 export default async function RiwayatAspirasi() {
   const token = cookies().get('token')?.value;
@@ -13,74 +12,99 @@ export default async function RiwayatAspirasi() {
   const session = await verifyJWT(token);
   if (!session) redirect('/login');
 
-  const my_aspirations = db.prepare(`
-    SELECT * FROM aspirations 
-    WHERE user_id = ? 
-    ORDER BY created_at DESC
-  `).all(session.user_id);
+  // Fetch aspirasi from aspirations table
+  const tickets = await db.prepare(`
+    SELECT a.*, u.nama as user_nama 
+    FROM aspirations a
+    LEFT JOIN users u ON a.user_id = u.id
+    WHERE a.is_deleted = 0
+    ORDER BY a.created_at DESC
+  `).all() as any[];
 
   return (
-    <>
-      <Navbar user={session} />
-      <div className="container" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        <div className="row g-4 mt-3 mb-5">
-          <div className="col-12">
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
-                <div>
-                  <h2 className="h4 fw-bold text-dark mb-1"><i className="fas fa-history text-primary me-2"></i>Riwayat Aspirasi Saya</h2>
-                  <p className="text-muted small mb-0">Daftar seluruh aspirasi yang pernah Anda kirimkan.</p>
-                </div>
-                <Link href="/aspirasi" className="btn btn-outline-secondary btn-sm">
-                  <i className="fas fa-arrow-left me-1"></i>Kembali
-                </Link>
-              </div>
-              <div className="card-body p-4">
-                <div className="table-responsive">
-                  <table className="table table-hover align-middle mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th style={{ width: '15%' }}>Tanggal</th>
-                        <th style={{ width: '25%' }}>Judul</th>
-                        <th style={{ width: '40%' }}>Isi Aspirasi</th>
-                        <th style={{ width: '10%' }} className="text-center"><i className="fas fa-thumbs-up text-success"></i></th>
-                        <th style={{ width: '10%' }} className="text-center"><i className="fas fa-thumbs-down text-danger"></i></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {my_aspirations.map((item: any) => (
-                        <tr key={item.id}>
-                          <td><small className="text-muted">{new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</small></td>
-                          <td><strong>{item.judul}</strong></td>
-                          <td>
-                            <p className="mb-0 text-truncate" style={{ maxWidth: '300px' }} title={item.isi}>
-                              {item.isi}
-                            </p>
-                          </td>
-                          <td className="text-center fw-bold text-success">{item.like_count}</td>
-                          <td className="text-center fw-bold text-danger">{item.dislike_count}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  
-                  {my_aspirations.length === 0 && (
-                    <div className="text-center py-5 text-muted">
-                      <i className="fas fa-inbox fa-3x mb-3 d-block opacity-25"></i>
-                      <p>Anda belum pernah membuat aspirasi.</p>
-                      <Link href="/aspirasi" className="btn btn-primary rounded-pill px-4 mt-2">
-                        <i className="fas fa-plus me-1"></i>Buat Aspirasi Pertama
-                      </Link>
+    <div className="row mb-4">
+        <div className="col-12">
+            <div className="card p-4 shadow-sm border-0 rounded-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 className="h4 text-warning fw-bold"><i className="fas fa-lightbulb me-2"></i>Aspirasi Mahasiswa</h2>
+                        <p className="text-muted mb-0">Dukung aspirasi yang bermanfaat untuk kemajuan kampus</p>
                     </div>
-                  )}
+                    <Link href="/aspirasi" className="btn btn-warning text-white rounded-pill px-4">
+                        <i className="fas fa-plus me-1"></i> Kirim Aspirasi
+                    </Link>
                 </div>
-              </div>
+
+                <div className="alert alert-info border-0 rounded-3">
+                    <i className="fas fa-info-circle me-2"></i>
+                    <strong>Aspirasi Publik:</strong> Semua aspirasi ditampilkan secara anonim. 
+                    Aspirasi dengan dukungan terbanyak akan diprioritaskan oleh admin.
+                </div>
+
+                <div className="table-responsive mt-3">
+                    <table className="table table-hover table-bordered align-middle">
+                        <thead className="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Judul Aspirasi</th>
+                                <th>Isi Aspirasi</th>
+                                <th className="text-center">Dukungan</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tickets.length > 0 ? tickets.map((t: any) => (
+                                <tr key={t.id}>
+                                    <td><span className="fw-semibold text-muted">#{t.id}</span></td>
+                                    <td>
+                                        <strong>{t.judul}</strong><br />
+                                        <small className="text-muted">Oleh: {t.is_anonymous ? 'Mahasiswa Anonim' : (t.user_nama || 'Mahasiswa')}</small>
+                                    </td>
+                                    <td>{t.isi ? (t.isi.length > 100 ? t.isi.substring(0, 100) + '...' : t.isi) : ''}</td>
+                                    <td className="text-center">
+                                        <span className="badge bg-warning text-dark fs-6">
+                                            <i className="fas fa-thumbs-up me-1"></i>{t.like_count || 0}
+                                        </span>
+                                    </td>
+                                    <td>{new Date(t.created_at).toLocaleDateString('id-ID')}</td>
+                                    <td>
+                                        <a href={`/api/aspirasi/${t.id}/vote-redirect`} className="btn btn-sm btn-outline-primary mb-1 d-block" title="Dukung aspirasi ini">
+                                            <i className="fas fa-plus me-1"></i>Dukung
+                                        </a>
+
+                                        {/* Admin Actions */}
+                                        {['admin', 'staff'].includes(session.role) && (
+                                            <form method="POST" action={`/api/aspirasi/${t.id}/admin-status`} className="mt-2">
+                                                <select name="status" className="form-select form-select-sm" defaultValue="Diajukan" title="Ubah Status">
+                                                    <option value="Diajukan">Diterima</option>
+                                                    <option value="Dipertimbangkan">Dipertimbangkan</option>
+                                                    <option value="Diterapkan">Diterapkan</option>
+                                                    <option value="Ditolak">Ditolak</option>
+                                                </select>
+                                                <button type="submit" className="btn btn-sm btn-secondary w-100 mt-1">Simpan</button>
+                                            </form>
+                                        )}
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={6}>
+                                        <div className="text-center py-4 text-muted">
+                                            <i className="fas fa-inbox fa-3x mb-2"></i>
+                                            <p>Belum ada aspirasi yang dikirim.</p>
+                                            <Link href="/aspirasi" className="btn btn-warning text-white rounded-pill">
+                                                <i className="fas fa-plus me-1"></i> Kirim Aspirasi Pertama
+                                            </Link>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <BottomNav user={session} />
-      <Footer />
-    </>
+    </div>
   );
 }

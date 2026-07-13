@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { verifyJWT } from '@/lib/auth';
@@ -12,7 +14,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
-    const reports = db.prepare(`
+    const reports = await db.prepare(`
       SELECT r.*, u.nim 
       FROM reports r 
       LEFT JOIN users u ON r.user_id = u.id 
