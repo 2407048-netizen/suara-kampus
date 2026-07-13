@@ -1,7 +1,9 @@
 import { createClient, Client, InStatement } from '@libsql/client';
 
 // ---- Turso cloud DB ----
-const url = process.env.TURSO_DATABASE_URL || 'file:instance/suara_kampus.db';
+// Force HTTPS transport (more reliable on Vercel than native libsql WebSocket)
+const rawUrl = process.env.TURSO_DATABASE_URL || 'file:instance/suara_kampus.db';
+const url = rawUrl.startsWith('libsql://') ? rawUrl.replace('libsql://', 'https://') : rawUrl;
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
 const turso = createClient({ url, authToken });
