@@ -33,7 +33,7 @@ export default async function Dashboard() {
   const laporan_selesai = tickets.filter(t => t.status === 'Selesai').length;
 
   // --- GET ASPIRASI STATS ---
-  const aspirasiAll = await db.prepare(`SELECT * FROM aspirasi`).all() as any[];
+  const aspirasiAll = await db.prepare(`SELECT * FROM aspirations`).all() as any[];
   const total_aspirasi = aspirasiAll.length;
   const total_like = aspirasiAll.reduce((sum, a) => sum + (a.support_count || 0), 0);
   
